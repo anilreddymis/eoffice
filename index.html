@@ -3,870 +3,899 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>eOffice — File Movement & Tracking</title>
+<title>NITK e-Office — Document Management &amp; File Workflow</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --bg:#EEF1F6;
+    --bg:#EEF1F5;
     --surface:#FFFFFF;
-    --surface-2:#F7F8FC;
-    --ink:#1A2138;
-    --ink-soft:#5B6478;
+    --surface-2:#F6F8FB;
+    --ink:#172033;
+    --ink-soft:#566076;
     --ink-faint:#8A93A8;
-    --line:#E2E6EF;
-    --line-strong:#CDD4E2;
-    --primary:#2E3C7E;
-    --primary-dark:#243066;
-    --primary-soft:#EEF0FB;
-    --phys:#C2410C;
-    --phys-soft:#FDEFE6;
-    --sent:#2563EB;     --sent-soft:#EAF0FE;
-    --pending:#B45309;  --pending-soft:#FBF1E3;
-    --received:#15803D; --received-soft:#E8F4EC;
-    --radius:10px;
+    --line:#E3E7EF;
+    --line-strong:#CDD4E0;
+    --navy:#13405C;
+    --navy-dark:#0E3047;
+    --navy-soft:#E7EFF4;
+    --gold:#B8893B;
+    --gold-soft:#FAF1E2;
+    --teal:#13796F;
+    /* status */
+    --inprog:#B45309;  --inprog-s:#FBF1E0;
+    --appr:#15803D;    --appr-s:#E7F4EC;
+    --rej:#C0392B;     --rej-s:#FBEAE8;
+    --ret:#7C3AED;     --ret-s:#F1EBFC;
+    --canc:#6B7280;    --canc-s:#EEF0F3;
+    --esc:#B91C1C;     --esc-s:#FBE9E9;
+    --radius:11px;
     --radius-sm:7px;
-    --shadow:0 1px 2px rgba(26,33,56,.05), 0 6px 20px rgba(26,33,56,.06);
+    --shadow:0 1px 2px rgba(23,32,51,.04), 0 6px 22px rgba(23,32,51,.06);
     --mono:'JetBrains Mono',ui-monospace,monospace;
+    --serif:'Lora',Georgia,serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    font-family:'Inter',system-ui,sans-serif;
-    background:var(--bg);
-    color:var(--ink);
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
   .mono{font-family:var(--mono);letter-spacing:-.02em}
+  .serif{font-family:var(--serif)}
+  button{font-family:inherit}
 
-  /* ---------- Top bar ---------- */
-  header{
-    background:var(--primary-dark);
-    color:#fff;
-    height:60px;
-    display:flex;
-    align-items:center;
-    padding:0 28px;
-    gap:16px;
-    position:sticky;top:0;z-index:50;
-  }
-  .brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:15px}
-  .brand .mark{
-    width:30px;height:30px;border-radius:7px;
-    background:linear-gradient(135deg,#5566c4,#8693e0);
-    display:grid;place-items:center;font-weight:700;font-size:13px;
-  }
-  .brand small{display:block;font-weight:400;font-size:11px;color:#aeb6e0;letter-spacing:.04em}
-  header .spacer{flex:1}
-  .topuser{display:flex;align-items:center;gap:10px;font-size:13px}
-  .topuser .av{width:32px;height:32px;border-radius:50%;background:#4d5cae;display:grid;place-items:center;font-weight:600;font-size:13px}
-  .topuser .meta{text-align:right;line-height:1.25}
-  .topuser .meta b{font-weight:600;font-size:13px}
-  .topuser .meta span{display:block;font-size:11px;color:#aeb6e0}
+  /* ============ LOGIN ============ */
+  #login{min-height:100vh;display:grid;grid-template-columns:1.15fr 1fr}
+  #login .hero{
+    background:linear-gradient(150deg,#0E3047 0%,#13405C 55%,#1B5577 100%);
+    color:#fff;padding:56px 60px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  #login .hero::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;
+    background:radial-gradient(circle,rgba(184,137,59,.25),transparent 70%)}
+  #login .emblem{width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);
+    display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:22px;color:var(--gold)}
+  #login .hero h1{font-family:var(--serif);font-size:34px;font-weight:600;line-height:1.2;margin-top:30px;max-width:14ch}
+  #login .hero .tag{color:#9FB8C9;font-size:15px;margin-top:14px;max-width:42ch;line-height:1.6}
+  #login .gov-strip{display:flex;gap:7px;margin-top:26px}
+  #login .gov-strip span{height:4px;width:40px;border-radius:3px}
+  #login .feat{display:flex;flex-direction:column;gap:13px;position:relative;z-index:2}
+  #login .feat .fi{display:flex;align-items:center;gap:11px;font-size:13.5px;color:#C7D6E0}
+  #login .feat .fi svg{flex:none;color:var(--gold)}
+  #login .foot-note{font-size:12px;color:#7C95A6;position:relative;z-index:2}
 
-  /* ---------- Tab nav ---------- */
-  nav.tabs{
-    background:var(--surface);
-    border-bottom:1px solid var(--line);
-    padding:0 28px;
-    display:flex;
-    gap:4px;
-    position:sticky;top:60px;z-index:40;
-    overflow-x:auto;
-  }
-  nav.tabs button{
-    border:none;background:none;cursor:pointer;
-    font-family:inherit;font-size:13.5px;font-weight:500;color:var(--ink-soft);
-    padding:15px 16px 13px;border-bottom:2.5px solid transparent;
-    display:flex;align-items:center;gap:7px;white-space:nowrap;
-  }
-  nav.tabs button .ic{width:16px;height:16px;opacity:.8}
-  nav.tabs button:hover{color:var(--ink)}
-  nav.tabs button.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
-  nav.tabs button .count{
-    font-size:11px;font-weight:600;background:var(--primary-soft);color:var(--primary);
-    border-radius:20px;padding:1px 7px;
-  }
+  #login .panel{display:flex;align-items:center;justify-content:center;padding:40px}
+  .login-card{width:100%;max-width:380px}
+  .login-card h2{font-size:22px;font-weight:700;letter-spacing:-.01em}
+  .login-card .sub{color:var(--ink-soft);font-size:13.5px;margin:6px 0 26px}
+  .lf{margin-bottom:16px}
+  .lf label{display:block;font-size:12.5px;font-weight:600;margin-bottom:7px}
+  .lf .inp{position:relative}
+  .lf .inp svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-faint)}
+  .lf input{width:100%;font-family:inherit;font-size:14px;padding:11px 12px 11px 38px;border:1px solid var(--line-strong);
+    border-radius:var(--radius-sm);background:var(--surface);transition:.15s}
+  .lf input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px var(--navy-soft)}
+  .captcha-row{display:flex;gap:10px;align-items:stretch}
+  .captcha-box{flex:none;width:108px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);
+    background:repeating-linear-gradient(45deg,#eef1f5,#eef1f5 6px,#e4e8ef 6px,#e4e8ef 12px);
+    display:grid;place-items:center;font-family:var(--mono);font-size:18px;font-weight:600;letter-spacing:4px;color:var(--navy);
+    text-decoration:line-through;user-select:none}
+  .login-row{display:flex;justify-content:space-between;align-items:center;margin:6px 0 20px;font-size:12.5px}
+  .login-row label{display:flex;gap:7px;align-items:center;color:var(--ink-soft);cursor:pointer}
+  .login-row a{color:var(--navy);font-weight:600;text-decoration:none}
+  .btn-login{width:100%;background:var(--navy);color:#fff;border:none;border-radius:var(--radius-sm);padding:12px;
+    font-size:14.5px;font-weight:600;cursor:pointer;transition:.15s}
+  .btn-login:hover{background:var(--navy-dark)}
+  .sso{margin-top:14px;text-align:center;font-size:12.5px;color:var(--ink-faint)}
+  .sso button{margin-top:12px;width:100%;background:#fff;border:1px solid var(--line-strong);border-radius:var(--radius-sm);
+    padding:11px;font-size:13.5px;font-weight:600;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px}
+  .sso button:hover{background:var(--surface-2)}
+  .role-hint{margin-top:22px;padding:12px 14px;background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:var(--radius-sm)}
+  .role-hint .rh-l{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:600;margin-bottom:8px}
+  .role-hint select{width:100%;font-family:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--line-strong);border-radius:6px;background:#fff}
 
-  /* ---------- Layout ---------- */
-  main{max-width:1180px;margin:0 auto;padding:26px 28px 60px}
-  .screen{display:none;animation:fade .25s ease}
-  .screen.active{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  /* ============ APP SHELL ============ */
+  #app{display:none;min-height:100vh}
+  #app.show{display:grid;grid-template-columns:248px 1fr}
+  .sidebar{background:var(--navy-dark);color:#cdd9e2;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+  .sb-brand{padding:18px 20px;display:flex;align-items:center;gap:11px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .sb-brand .em{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+    display:grid;place-items:center;font-family:var(--serif);font-weight:700;color:var(--gold);font-size:16px;flex:none}
+  .sb-brand b{font-family:var(--serif);font-size:15px;color:#fff;font-weight:600;line-height:1.1}
+  .sb-brand small{display:block;font-size:10.5px;color:#7e95a6;letter-spacing:.03em;margin-top:2px}
+  .sb-nav{padding:12px 12px;flex:1;overflow-y:auto}
+  .sb-sec{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#5f7a8c;font-weight:600;padding:14px 10px 6px}
+  .sb-item{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:8px;font-size:13.5px;font-weight:500;
+    color:#bcccd6;cursor:pointer;margin-bottom:1px;transition:.12s;position:relative}
+  .sb-item svg{width:17px;height:17px;flex:none;opacity:.85}
+  .sb-item:hover{background:rgba(255,255,255,.06);color:#fff}
+  .sb-item.active{background:var(--navy);color:#fff}
+  .sb-item.active::before{content:"";position:absolute;left:-12px;top:7px;bottom:7px;width:3px;background:var(--gold);border-radius:0 3px 3px 0}
+  .sb-item .pill{margin-left:auto;font-size:10.5px;font-weight:700;background:var(--gold);color:#3a2a0e;border-radius:20px;padding:1px 7px}
+  .sb-item.admin-only{display:none}
+  .sb-foot{padding:14px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:#5f7a8c}
 
-  .page-head{margin-bottom:20px}
-  .page-head h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
-  .page-head p{color:var(--ink-soft);font-size:13.5px;margin-top:3px}
+  .main{display:flex;flex-direction:column;min-width:0}
+  .topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--line);display:flex;align-items:center;
+    gap:16px;padding:0 26px;position:sticky;top:0;z-index:30}
+  .hamb{display:none;background:none;border:none;cursor:pointer;color:var(--ink)}
+  .crumb{font-size:13px;color:var(--ink-faint)}
+  .crumb b{color:var(--ink);font-weight:600}
+  .topbar .search{flex:1;max-width:380px;position:relative}
+  .topbar .search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-faint)}
+  .topbar .search input{width:100%;font-family:inherit;font-size:13px;padding:8px 12px 8px 34px;border:1px solid var(--line-strong);
+    border-radius:20px;background:var(--surface-2)}
+  .topbar .search input:focus{outline:none;border-color:var(--navy);background:#fff}
+  .topbar .spacer{flex:1}
+  .tb-icon{position:relative;width:38px;height:38px;border-radius:9px;display:grid;place-items:center;cursor:pointer;color:var(--ink-soft)}
+  .tb-icon:hover{background:var(--surface-2)}
+  .tb-icon .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--esc);border:1.5px solid #fff}
+  .tb-user{display:flex;align-items:center;gap:10px;cursor:pointer;padding-left:8px;border-left:1px solid var(--line)}
+  .tb-user .av{width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:600;font-size:13px}
+  .tb-user .mt{line-height:1.25}
+  .tb-user .mt b{font-size:13px;font-weight:600;display:block}
+  .tb-user .mt span{font-size:11px;color:var(--ink-soft)}
+  .role-switch{font-family:inherit;font-size:11.5px;font-weight:600;color:var(--navy);background:var(--navy-soft);
+    border:none;border-radius:7px;padding:6px 9px;cursor:pointer}
 
-  /* ---------- Badges ---------- */
-  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
-    padding:3px 9px;border-radius:20px;line-height:1.4;white-space:nowrap}
-  .b-elec{background:var(--primary-soft);color:var(--primary)}
-  .b-phys{background:var(--phys-soft);color:var(--phys)}
-  .p-chip{
-    width:20px;height:20px;border-radius:5px;background:var(--phys);color:#fff;
-    font-weight:700;font-size:12px;display:inline-grid;place-items:center;flex:none;
-    box-shadow:0 1px 3px rgba(194,65,12,.4);
-  }
-  .st{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:6px}
+  .view-wrap{padding:24px 26px 50px;max-width:1300px;width:100%;margin:0 auto}
+  .view{display:none;animation:fade .25s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .ph{margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  .ph h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+  .ph p{color:var(--ink-soft);font-size:13.5px;margin-top:3px}
+
+  /* ---- buttons ---- */
+  .btn{font-size:13px;font-weight:600;cursor:pointer;border-radius:var(--radius-sm);padding:9px 16px;border:1px solid transparent;
+    display:inline-flex;align-items:center;gap:7px;transition:.15s;white-space:nowrap}
+  .btn svg{width:15px;height:15px}
+  .btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--navy-dark)}
+  .btn-outline{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}.btn-outline:hover{background:var(--surface-2)}
+  .btn-appr{background:var(--appr);color:#fff}.btn-appr:hover{filter:brightness(.93)}
+  .btn-rej{background:var(--rej);color:#fff}.btn-rej:hover{filter:brightness(.93)}
+  .btn-ghost{background:transparent;color:var(--navy);border-color:transparent}.btn-ghost:hover{background:var(--navy-soft)}
+  .btn-sm{padding:6px 12px;font-size:12.5px}
+
+  /* ---- badges/status ---- */
+  .st{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:6px;white-space:nowrap}
   .st::before{content:"";width:6px;height:6px;border-radius:50%}
-  .st-sent{background:var(--sent-soft);color:var(--sent)}        .st-sent::before{background:var(--sent)}
-  .st-pending{background:var(--pending-soft);color:var(--pending)} .st-pending::before{background:var(--pending)}
-  .st-received{background:var(--received-soft);color:var(--received)} .st-received::before{background:var(--received)}
+  .st-inprog{background:var(--inprog-s);color:var(--inprog)}.st-inprog::before{background:var(--inprog)}
+  .st-appr{background:var(--appr-s);color:var(--appr)}.st-appr::before{background:var(--appr)}
+  .st-rej{background:var(--rej-s);color:var(--rej)}.st-rej::before{background:var(--rej)}
+  .st-ret{background:var(--ret-s);color:var(--ret)}.st-ret::before{background:var(--ret)}
+  .st-canc{background:var(--canc-s);color:var(--canc)}.st-canc::before{background:var(--canc)}
+  .st-esc{background:var(--esc-s);color:var(--esc)}.st-esc::before{background:var(--esc)}
+  .pri{font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px}
+  .pri-high{background:var(--rej-s);color:var(--rej)} .pri-med{background:var(--inprog-s);color:var(--inprog)} .pri-low{background:var(--canc-s);color:var(--canc)}
 
-  /* ---------- Inbox cards ---------- */
-  .file-list{display:flex;flex-direction:column;gap:12px}
-  .file-card{
-    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:16px 18px;display:flex;gap:16px;align-items:flex-start;
-    transition:border-color .15s, box-shadow .15s;
-  }
-  .file-card:hover{border-color:var(--line-strong)}
-  .file-card .fc-icon{
-    width:42px;height:42px;border-radius:9px;flex:none;display:grid;place-items:center;
-    background:var(--surface-2);border:1px solid var(--line);
-  }
-  .file-card .fc-body{flex:1;min-width:0}
-  .file-card .fc-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px}
-  .file-card .fc-no{font-size:12.5px;color:var(--primary);font-weight:600}
-  .file-card h3{font-size:14.5px;font-weight:600;letter-spacing:-.01em}
-  .file-card .fc-sub{font-size:12.5px;color:var(--ink-soft);margin-top:3px;display:flex;gap:14px;flex-wrap:wrap}
-  .file-card .fc-sub b{color:var(--ink);font-weight:500}
-  .file-card .fc-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none}
-  .btn{
-    font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border-radius:var(--radius-sm);
-    padding:8px 16px;border:1px solid transparent;display:inline-flex;align-items:center;gap:7px;transition:.15s;
-  }
-  .btn-primary{background:var(--primary);color:#fff}
-  .btn-primary:hover{background:var(--primary-dark)}
-  .btn-outline{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
-  .btn-outline:hover{background:var(--surface-2);border-color:var(--ink-faint)}
-  .btn-recv{background:var(--received);color:#fff}
-  .btn-recv:hover{filter:brightness(.93)}
-  .btn-sm{padding:6px 13px;font-size:12.5px}
-  .btn:disabled{opacity:.55;cursor:default}
-
-  /* ---------- Send File screen ---------- */
-  .send-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:22px;align-items:start}
+  /* ---- cards/grids ---- */
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-  .card .card-hd{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px}
-  .card .card-hd h2{font-size:14.5px;font-weight:600}
-  .card .card-bd{padding:20px}
-  .field{margin-bottom:17px}
-  .field:last-child{margin-bottom:0}
-  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:7px}
-  .field label .req{color:var(--phys)}
-  .field .hint{font-size:11.5px;color:var(--ink-faint);font-weight:400;margin-left:4px}
-  .control{
-    width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);
-    background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius-sm);
-    padding:10px 12px;transition:.15s;
-  }
-  .control:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
-  select.control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235B6478' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;cursor:pointer}
-  textarea.control{resize:vertical;min-height:84px;line-height:1.5}
-  .search-wrap{position:relative}
-  .search-wrap .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);pointer-events:none}
-  .search-wrap .control{padding-left:34px}
-  .dd{position:absolute;left:0;right:0;top:calc(100% + 5px);background:#fff;border:1px solid var(--line-strong);
-    border-radius:var(--radius-sm);box-shadow:0 10px 28px rgba(26,33,56,.14);z-index:20;overflow:hidden;display:none}
-  .dd.open{display:block}
-  .dd-item{padding:9px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px}
-  .dd-item:hover{background:var(--surface-2)}
-  .dd-item .av{width:28px;height:28px;border-radius:50%;background:var(--primary-soft);color:var(--primary);
-    font-weight:600;font-size:11px;display:grid;place-items:center;flex:none}
-  .dd-item .nm b{font-weight:600;font-size:13px}
-  .dd-item .nm span{display:block;font-size:11.5px;color:var(--ink-soft)}
-  .form-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;
-    padding:15px 20px;border-top:1px solid var(--line);background:var(--surface-2);border-radius:0 0 var(--radius) var(--radius)}
-  .form-foot .note{font-size:12px;color:var(--ink-faint)}
+  .card-hd{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .card-hd h3{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .card-hd .more{font-size:12px;color:var(--navy);font-weight:600;cursor:pointer}
+  .card-bd{padding:18px}
 
-  /* Selected file panel */
-  .selfile .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
-  .selfile .row:last-child{border-bottom:none}
-  .selfile .row .k{color:var(--ink-soft)}
-  .selfile .row .v{font-weight:600;text-align:right}
-  .route-prev{margin-top:14px;padding:13px 15px;background:var(--primary-soft);border-radius:var(--radius-sm);font-size:12.5px}
-  .route-prev .rp-h{font-weight:600;color:var(--primary);margin-bottom:8px;font-size:12px;letter-spacing:.02em;text-transform:uppercase}
-  .route-prev .rp-line{display:flex;align-items:center;gap:8px;color:var(--ink)}
-  .route-prev .arrow{color:var(--primary)}
+  /* stat cards */
+  .stat-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:20px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 15px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .stat .lab{font-size:11.5px;color:var(--ink-soft);font-weight:500}
+  .stat .val{font-size:25px;font-weight:700;letter-spacing:-.02em;margin-top:4px}
+  .stat .tr{font-size:11px;font-weight:600;margin-top:5px;display:flex;align-items:center;gap:3px}
+  .stat .strip{position:absolute;left:0;top:0;bottom:0;width:3px}
+  .up{color:var(--appr)} .down{color:var(--rej)}
+
+  /* dashboard layout */
+  .dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
+  .dash-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px}
+  .chart-box{height:240px;position:relative}
+  .chart-sm{height:200px;position:relative}
+
+  .act-item{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .act-item:last-child{border-bottom:none;padding-bottom:0}
+  .act-dot{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;background:var(--navy-soft);color:var(--navy)}
+  .act-item .ai-b{flex:1;min-width:0}
+  .act-item .ai-b p{font-size:13px}.act-item .ai-b p b{font-weight:600}
+  .act-item .ai-b .t{font-size:11.5px;color:var(--ink-faint);margin-top:2px}
+
+  .appr-row{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .appr-row:last-child{border-bottom:none}
+  .appr-row .ar-b{flex:1;min-width:0}
+  .appr-row .ar-b .no{font-size:11.5px;color:var(--navy);font-weight:600}
+  .appr-row .ar-b .sj{font-size:13px;font-weight:500;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .qa{display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--line);border-radius:var(--radius-sm);
+    cursor:pointer;transition:.15s;background:var(--surface)}
+  .qa:hover{border-color:var(--navy);background:var(--navy-soft)}
+  .qa svg{color:var(--navy)} .qa span{font-size:12.5px;font-weight:600}
+
+  /* workflow chain */
+  .chain{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin-top:6px}
+  .chain .node{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:78px;position:relative}
+  .chain .nc{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;
+    background:var(--surface-2);border:2px solid var(--line-strong);color:var(--ink-faint)}
+  .chain .node.done .nc{background:var(--appr);border-color:var(--appr);color:#fff}
+  .chain .node.current .nc{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 0 0 4px var(--navy-soft)}
+  .chain .node .nl{font-size:10.5px;color:var(--ink-soft);font-weight:600;line-height:1.2;max-width:80px}
+  .chain .node.current .nl{color:var(--navy)}
+  .chain .link{height:2px;flex:1;min-width:18px;background:var(--line-strong);margin-top:-22px}
+  .chain .link.done{background:var(--appr)}
+
+  /* tables */
+  .tbl-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+  .tbl-tools .fsel{font-family:inherit;font-size:12.5px;padding:8px 10px;border:1px solid var(--line-strong);border-radius:7px;background:#fff;color:var(--ink)}
+  .tbl-tools .fsearch{position:relative;flex:1;min-width:180px;max-width:280px}
+  .tbl-tools .fsearch svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-faint)}
+  .tbl-tools .fsearch input{width:100%;font-family:inherit;font-size:12.5px;padding:8px 10px 8px 32px;border:1px solid var(--line-strong);border-radius:7px}
+  .table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px}
+  thead th{text-align:left;font-size:10.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;
+    padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr{cursor:pointer;transition:.1s}
+  tbody tr:hover{background:var(--surface-2)}
+  .cn b{font-weight:600;font-size:13px;display:block}.cn span{font-size:11.5px;color:var(--ink-soft)}
+
+  /* tabs (completed files) */
+  .subtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .subtabs button{border:none;background:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink-soft);
+    padding:10px 14px;border-bottom:2.5px solid transparent;cursor:pointer}
+  .subtabs button.active{color:var(--navy);border-bottom-color:var(--navy)}
+
+  /* file detail */
+  .fd-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+  .meta-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .meta-row:last-child{border-bottom:none}.meta-row .k{color:var(--ink-soft)}.meta-row .v{font-weight:600;text-align:right;max-width:60%}
+  .act-bar{display:flex;gap:8px;flex-wrap:wrap;padding:16px 18px;background:var(--surface-2);border-top:1px solid var(--line);border-radius:0 0 var(--radius) var(--radius)}
+  .timeline{position:relative;padding-left:6px}
+  .tl-item{position:relative;padding:0 0 4px 30px}
+  .tl-item::before{content:"";position:absolute;left:8px;top:22px;bottom:-4px;width:2px;background:var(--line)}
+  .tl-item:last-child::before{display:none}
+  .tl-dot{position:absolute;left:0;top:4px;width:18px;height:18px;border-radius:50%;background:#fff;border:2px solid var(--line-strong);z-index:2;display:grid;place-items:center}
+  .tl-dot.ok{background:var(--appr);border-color:var(--appr)} .tl-dot.cur{border-color:var(--navy)} .tl-dot.cur::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--navy)}
+  .tl-row{padding-bottom:16px}
+  .tl-row .h{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+  .tl-row .h b{font-size:13px;font-weight:600}.tl-row .h .t{font-size:11px;color:var(--ink-faint)}
+  .tl-row .desig{font-size:11.5px;color:var(--ink-soft)}
+  .tl-row .rm{font-size:12px;color:var(--ink-soft);margin-top:5px;background:var(--surface-2);padding:7px 10px;border-radius:5px;border-left:3px solid var(--line-strong)}
+
+  .upload{border:2px dashed var(--line-strong);border-radius:var(--radius-sm);padding:22px;text-align:center;background:var(--surface-2);cursor:pointer}
+  .upload:hover{border-color:var(--navy);background:var(--navy-soft)}
+  .upload svg{color:var(--navy)} .upload p{font-size:13px;font-weight:600;margin-top:8px} .upload span{font-size:11.5px;color:var(--ink-faint)}
+  .file-chip{display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid var(--line);border-radius:7px;margin-top:8px;font-size:12.5px}
+  .file-chip .ext{font-size:9.5px;font-weight:700;color:#fff;padding:2px 5px;border-radius:4px}
+  .ext-pdf{background:#C0392B}.ext-doc{background:#2563EB}.ext-xls{background:#15803D}.ext-img{background:#7C3AED}
+
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:7px}.field label .req{color:var(--rej)}
+  .control{width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--line-strong);
+    border-radius:var(--radius-sm);padding:10px 12px;transition:.15s}
+  .control:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px var(--navy-soft)}
+  select.control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23566076' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;cursor:pointer}
+  textarea.control{resize:vertical;min-height:80px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+  /* escalation */
+  .esc-rules{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+  .esc-rule{padding:16px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
+  .esc-rule .d{font-size:24px;font-weight:700;font-family:var(--serif)}
+  .esc-rule.r3 .d{color:var(--inprog)}.esc-rule.r5 .d{color:#D97706}.esc-rule.r7 .d{color:var(--esc)}
+  .esc-rule .tx{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+
+  /* config */
+  .stage-list{display:flex;flex-direction:column;gap:8px}
+  .stage{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface)}
+  .stage .num{width:26px;height:26px;border-radius:7px;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+  .stage .sn{flex:1;font-size:13.5px;font-weight:600}.stage .sr{font-size:12px;color:var(--ink-soft)}
+  .stage .grip{color:var(--ink-faint);cursor:grab}
+  .toggle{width:40px;height:23px;border-radius:20px;background:var(--line-strong);position:relative;cursor:pointer;flex:none;transition:.2s}
+  .toggle::after{content:"";position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.2s}
+  .toggle.on{background:var(--navy)}.toggle.on::after{left:20px}
 
   /* toast */
-  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);
-    background:var(--ink);color:#fff;padding:13px 20px;border-radius:9px;font-size:13.5px;font-weight:500;
-    box-shadow:0 12px 30px rgba(0,0,0,.25);display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;
-    transition:.3s;z-index:100}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+    padding:13px 20px;border-radius:9px;font-size:13.5px;font-weight:500;box-shadow:0 12px 30px rgba(0,0,0,.25);
+    display:flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transition:.3s;z-index:200}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  .toast .tc{width:22px;height:22px;border-radius:50%;background:var(--received);display:grid;place-items:center;flex:none}
+  .toast .tc{width:22px;height:22px;border-radius:50%;background:var(--appr);display:grid;place-items:center;flex:none}
 
-  /* ---------- History ---------- */
-  .hist-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:14px;flex-wrap:wrap}
-  .hist-file{display:flex;align-items:center;gap:12px}
-  .hist-file .hf-icon{width:40px;height:40px;border-radius:9px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center}
-  .hist-file h2{font-size:15px;font-weight:600}
-  .hist-file .sub{font-size:12.5px;color:var(--ink-soft)}
-  .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;padding:3px}
-  .seg button{border:none;background:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-soft);
-    padding:6px 14px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:6px}
-  .seg button.active{background:var(--primary);color:#fff}
+  .sb-back{position:fixed;inset:0;background:rgba(14,48,71,.45);z-index:25;display:none}
 
-  /* timeline */
-  .timeline{position:relative;padding-left:8px}
-  .tl-item{position:relative;padding:0 0 6px 34px}
-  .tl-item::before{content:"";position:absolute;left:9px;top:24px;bottom:-6px;width:2px;background:var(--line)}
-  .tl-item:last-child::before{display:none}
-  .tl-dot{position:absolute;left:0;top:5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
-    background:#fff;border:2px solid var(--line-strong);z-index:2}
-  .tl-dot.sent{border-color:var(--sent)} .tl-dot.sent::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--sent)}
-  .tl-dot.pending{border-color:var(--pending)} .tl-dot.pending::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--pending)}
-  .tl-dot.received{border-color:var(--received);background:var(--received)} 
-  .tl-dot.received svg{width:11px;height:11px}
-  .tl-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:14px 16px;margin-bottom:16px}
-  .tl-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-  .tl-move{display:flex;align-items:center;gap:9px;font-size:13.5px;flex-wrap:wrap}
-  .tl-move .who b{font-weight:600}
-  .tl-move .who span{display:block;font-size:11.5px;color:var(--ink-soft)}
-  .tl-move .arr{color:var(--ink-faint)}
-  .tl-time{font-size:12px;color:var(--ink-faint);white-space:nowrap}
-  .tl-remark{margin-top:10px;padding:9px 12px;background:var(--surface-2);border-left:3px solid var(--line-strong);
-    border-radius:4px;font-size:12.5px;color:var(--ink-soft)}
-  .tl-remark b{color:var(--ink);font-weight:600}
-
-  /* table */
-  .table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  thead th{text-align:left;font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;
-    padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--line)}
-  tbody td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
-  tbody tr:last-child td{border-bottom:none}
-  tbody tr:hover{background:var(--surface-2)}
-  .cell-name b{font-weight:600;font-size:13px} .cell-name span{display:block;font-size:11.5px;color:var(--ink-soft)}
-
-  /* ---------- Physical tracking ---------- */
-  .ptrack-note{background:var(--phys-soft);border:1px solid #f3d3c0;border-radius:var(--radius);padding:14px 18px;
-    display:flex;gap:13px;align-items:flex-start;margin-bottom:20px}
-  .ptrack-note .pn-ic{flex:none;margin-top:1px}
-  .ptrack-note h3{font-size:13.5px;font-weight:600;color:var(--phys);margin-bottom:2px}
-  .ptrack-note p{font-size:12.5px;color:#8a4424}
-
-  /* ---------- Advanced ---------- */
-  .adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .adv-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:22px;display:flex;flex-direction:column}
-  .adv-card .ac-ic{width:46px;height:46px;border-radius:11px;display:grid;place-items:center;margin-bottom:15px}
-  .adv-card .ac-ic.blue{background:var(--primary-soft)}
-  .adv-card .ac-ic.orange{background:var(--phys-soft)}
-  .adv-card h3{font-size:15.5px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
-  .adv-card .pill{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
-    background:var(--pending-soft);color:var(--pending);padding:2px 8px;border-radius:5px}
-  .adv-card > p{font-size:13px;color:var(--ink-soft);margin-top:8px;line-height:1.55}
-  .adv-card .ac-ex{margin-top:14px;padding:11px 14px;background:var(--surface-2);border-radius:var(--radius-sm);
-    font-size:12.5px;color:var(--ink-soft);display:flex;align-items:center;gap:10px}
-  .adv-card .ac-ex .ex-node{font-weight:600;color:var(--ink);background:#fff;border:1px solid var(--line-strong);
-    padding:4px 10px;border-radius:6px;font-size:12px}
-  .adv-card .ac-ex .ex-arrow{color:var(--primary);font-weight:700}
-  .adv-card .ac-foot{margin-top:auto;padding-top:18px;display:flex;align-items:center;justify-content:space-between}
-  .adv-card .toggle{width:42px;height:24px;border-radius:20px;background:var(--line-strong);position:relative;cursor:pointer;transition:.2s;flex:none}
-  .adv-card .toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-  .adv-card .toggle.on{background:var(--primary)}
-  .adv-card .toggle.on::after{left:21px}
-  .adv-card .ac-foot .lbl{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
-
-  /* bulk transfer mini-flow */
-  .bulk-flow{margin-top:14px;display:flex;align-items:center;gap:12px}
-  .bulk-emp{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:11px 13px}
-  .bulk-emp .be-l{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);font-weight:600}
-  .bulk-emp .be-n{font-size:13px;font-weight:600;margin-top:2px}
-  .bulk-emp .be-c{font-size:11.5px;color:var(--ink-soft);margin-top:3px}
-  .bulk-arrow{flex:none;color:var(--primary)}
-
-  @media(max-width:900px){
-    .send-grid{grid-template-columns:1fr}
-    .adv-grid{grid-template-columns:1fr}
-    main{padding:20px 16px 50px}
-    header{padding:0 16px}
-    nav.tabs{padding:0 16px}
-    .topuser .meta{display:none}
+  /* responsive / mobile */
+  @media(max-width:1080px){.stat-grid{grid-template-columns:repeat(4,1fr)}.dash-grid,.dash-grid-3{grid-template-columns:1fr}.fd-grid{grid-template-columns:1fr}}
+  @media(max-width:820px){
+    #login{grid-template-columns:1fr}#login .hero{display:none}
+    #app.show{grid-template-columns:1fr}
+    .sidebar{position:fixed;left:0;top:0;width:248px;z-index:26;transform:translateX(-100%);transition:.25s}
+    .sidebar.open{transform:none}.sb-back.show{display:block}
+    .hamb{display:grid}
+    .stat-grid{grid-template-columns:repeat(2,1fr)}
+    .esc-rules{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}
+    .topbar .search{display:none}.tb-user .mt{display:none}
+    .view-wrap{padding:18px 14px 40px}
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <div class="mark">eO</div>
-    <div>eOffice
-      <small>File Movement &amp; Tracking</small>
+<!-- ================= LOGIN ================= -->
+<div id="login">
+  <div class="hero">
+    <div>
+      <div class="emblem">पि</div>
+      <div class="gov-strip"><span style="background:#FF9933"></span><span style="background:#fff"></span><span style="background:#138808"></span></div>
+    </div>
+    <div>
+      <h1>National Institute of &amp; Technology</h1>
+      <p class="tag">e-Office — a paperless platform for file initiation, multi-level approvals, and end-to-end workflow tracking across the Institute.</p>
+      <div class="feat" style="margin-top:30px">
+        <div class="fi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> Role-based dashboards &amp; access control</div>
+        <div class="fi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 3 5-6"/></svg> Live tracking with automated escalations</div>
+        <div class="fi"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Complete tamper-evident audit trail</div>
+      </div>
+    </div>
+    <div class="foot-note">Government of India · Ministry of Education · Demonstration build with fictional data</div>
+  </div>
+
+  <div class="panel">
+    <div class="login-card">
+      <h2>Sign in to e-Office</h2>
+      <p class="sub">Use your Employee ID and password to continue.</p>
+
+      <div class="lf">
+        <label>Employee ID / Username</label>
+        <div class="inp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg>
+          <input type="text" value="NITK10342" />
+        </div>
+      </div>
+      <div class="lf">
+        <label>Password</label>
+        <div class="inp">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <input type="password" value="••••••••" />
+        </div>
+      </div>
+      <div class="lf">
+        <label>Captcha</label>
+        <div class="captcha-row">
+          <div class="captcha-box">7K9PA</div>
+          <input type="text" placeholder="Enter the text above" style="flex:1" class="control" />
+        </div>
+      </div>
+
+      <div class="login-row">
+        <label><input type="checkbox" checked /> Keep me signed in</label>
+        <a href="#" onclick="return false">Forgot password?</a>
+      </div>
+      <button class="btn-login" onclick="doLogin()">Sign in</button>
+
+      <div class="sso">
+        Single Sign-On ready
+        <button onclick="doLogin()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#13405C" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+          Continue with Institute SSO
+        </button>
+      </div>
+
+      <div class="role-hint">
+        <div class="rh-l">Demo · sign in as role</div>
+        <select id="login-role">
+          <option value="initiator">Initiator / Case Worker</option>
+          <option value="dealing">Dealing Assistant</option>
+          <option value="reporting">Reporting Officer</option>
+          <option value="reviewing">Reviewing Officer</option>
+          <option value="academic">Academic Section Officer</option>
+          <option value="establishment">Establishment Section Officer</option>
+          <option value="research">Research &amp; External Affairs Officer</option>
+          <option value="finance">Finance Officer</option>
+          <option value="admin">System Administrator</option>
+        </select>
+      </div>
     </div>
   </div>
-  <div class="spacer"></div>
-  <div class="topuser">
-    <div class="meta"><b>R. Subramanian</b><span>Section Officer · Establishment</span></div>
-    <div class="av">RS</div>
-  </div>
-</header>
+</div>
 
-<nav class="tabs" id="tabs">
-  <button class="active" data-tab="inbox">
-    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
-    My Files <span class="count">5</span>
-  </button>
-  <button data-tab="send">
-    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-    Send File
-  </button>
-  <button data-tab="history">
-    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-    Movement History
-  </button>
-  <button data-tab="physical">
-    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-    Physical Tracking <span class="count">2</span>
-  </button>
-  <button data-tab="advanced">
-    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Advanced
-  </button>
-</nav>
-
-<main>
-
-  <!-- ============ INBOX ============ -->
-  <section class="screen active" id="inbox">
-    <div class="page-head">
-      <h1>My Files</h1>
-      <p>Files currently in your inbox. Open a file to forward it, or confirm receipt of an incoming physical file.</p>
+<!-- ================= APP ================= -->
+<div id="app">
+  <div class="sb-back" id="sbBack" onclick="toggleSidebar(false)"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="em">पि</div>
+      <div><b>NITK e-Office</b><small>File Workflow System</small></div>
     </div>
-    <div class="file-list">
+    <nav class="sb-nav">
+      <div class="sb-sec">Workspace</div>
+      <div class="sb-item active" data-view="dashboard" onclick="nav('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg> Dashboard</div>
+      <div class="sb-item" data-view="initiate" onclick="nav('initiate')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/></svg> Initiate File</div>
+      <div class="sb-sec">Tracking</div>
+      <div class="sb-item" data-view="inprogress" onclick="nav('inprogress')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Files In Progress <span class="pill">9</span></div>
+      <div class="sb-item" data-view="completed" onclick="nav('completed')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg> Completed Files</div>
+      <div class="sb-item" data-view="escalation" onclick="nav('escalation')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12" y2="17"/></svg> Escalations <span class="pill">3</span></div>
+      <div class="sb-sec">Insights &amp; Admin</div>
+      <div class="sb-item" data-view="reports" onclick="nav('reports')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg> Reports &amp; Analytics</div>
+      <div class="sb-item admin-only" data-view="config" onclick="nav('config')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Workflow Config</div>
+    </nav>
+    <div class="sb-foot">v1.0 · Demo · fictional data only</div>
+  </aside>
 
-      <div class="file-card">
-        <div class="fc-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E3C7E" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-        </div>
-        <div class="fc-body">
-          <div class="fc-top">
-            <span class="fc-no mono">IITH/EST/2026/0142</span>
-            <span class="badge b-elec">● Electronic</span>
-          </div>
-          <h3>Faculty Recruitment — Sanction of Posts (CSE)</h3>
-          <div class="fc-sub"><span>From <b>Dean (Faculty Affairs)</b></span><span>Received <b>18 Jun, 10:24 AM</b></span></div>
-        </div>
-        <div class="fc-right">
-          <span class="st st-received">Received</span>
-          <button class="btn btn-primary btn-sm" onclick="goSend()">Send File →</button>
-        </div>
+  <div class="main">
+    <div class="topbar">
+      <button class="hamb" onclick="toggleSidebar(true)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="crumb">e-Office <span style="margin:0 6px;color:var(--line-strong)">/</span> <b id="crumb">Dashboard</b></div>
+      <div class="spacer"></div>
+      <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input placeholder="Search files by number or subject…"></div>
+      <div class="tb-icon" title="Notifications"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></div>
+      <button class="role-switch" onclick="cycleRole()" title="Demo: switch role"><span id="roleSwitchLbl">Switch role</span></button>
+      <div class="tb-user">
+        <div class="av" id="userAv">AS</div>
+        <div class="mt"><b id="userName">Firoze </b><span id="userRole">Initiator / Case Worker</span></div>
       </div>
-
-      <div class="file-card">
-        <div class="fc-icon">
-          <span class="p-chip">P</span>
-        </div>
-        <div class="fc-body">
-          <div class="fc-top">
-            <span class="fc-no mono">IITH/F&amp;A/2026/0098</span>
-            <span class="badge b-phys"><span class="p-chip" style="width:14px;height:14px;font-size:9px">P</span> Physical</span>
-          </div>
-          <h3>Annual Maintenance Contract — Lab Equipment (Bill)</h3>
-          <div class="fc-sub"><span>From <b>Stores &amp; Purchase</b></span><span>Dispatched <b>18 Jun, 02:10 PM</b></span></div>
-        </div>
-        <div class="fc-right" id="phys-inbox-1">
-          <span class="st st-pending">Pending Physical Receipt</span>
-          <button class="btn btn-recv btn-sm" onclick="confirmReceipt('phys-inbox-1', this)">✓ Receive / OK</button>
-        </div>
-      </div>
-
-      <div class="file-card">
-        <div class="fc-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E3C7E" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-        </div>
-        <div class="fc-body">
-          <div class="fc-top">
-            <span class="fc-no mono">IITH/ACAD/2026/0511</span>
-            <span class="badge b-elec">● Electronic</span>
-          </div>
-          <h3>Revision of Ph.D. Ordinance — Draft for Comments</h3>
-          <div class="fc-sub"><span>From <b>Academic Section</b></span><span>Received <b>17 Jun, 04:48 PM</b></span></div>
-        </div>
-        <div class="fc-right">
-          <span class="st st-received">Received</span>
-          <button class="btn btn-primary btn-sm" onclick="goSend()">Send File →</button>
-        </div>
-      </div>
-
-      <div class="file-card">
-        <div class="fc-icon"><span class="p-chip">P</span></div>
-        <div class="fc-body">
-          <div class="fc-top">
-            <span class="fc-no mono">IITH/EST/2026/0137</span>
-            <span class="badge b-phys"><span class="p-chip" style="width:14px;height:14px;font-size:9px">P</span> Physical</span>
-          </div>
-          <h3>Service Book Updation — Sri K. Mahesh (Sr. Tech.)</h3>
-          <div class="fc-sub"><span>From <b>Establishment-II</b></span><span>Dispatched <b>17 Jun, 11:02 AM</b></span></div>
-        </div>
-        <div class="fc-right" id="phys-inbox-2">
-          <span class="st st-pending">Pending Physical Receipt</span>
-          <button class="btn btn-recv btn-sm" onclick="confirmReceipt('phys-inbox-2', this)">✓ Receive / OK</button>
-        </div>
-      </div>
-
-      <div class="file-card">
-        <div class="fc-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E3C7E" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-        </div>
-        <div class="fc-body">
-          <div class="fc-top">
-            <span class="fc-no mono">IITH/IRD/2026/0203</span>
-            <span class="badge b-elec">● Electronic</span>
-          </div>
-          <h3>Sponsored Project — Utilisation Certificate (DST)</h3>
-          <div class="fc-sub"><span>From <b>R&amp;D Office</b></span><span>Received <b>16 Jun, 09:15 AM</b></span></div>
-        </div>
-        <div class="fc-right">
-          <span class="st st-received">Received</span>
-          <button class="btn btn-primary btn-sm" onclick="goSend()">Send File →</button>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ============ SEND FILE ============ -->
-  <section class="screen" id="send">
-    <div class="page-head">
-      <h1>Send File</h1>
-      <p>Route this file to another official. The file will appear instantly in the recipient's inbox.</p>
     </div>
 
-    <div class="send-grid">
-      <!-- left: form -->
-      <div class="card">
-        <div class="card-hd">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2E3C7E" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          <h2>Route to recipient</h2>
+    <div class="view-wrap">
+
+      <!-- ===== DASHBOARD ===== -->
+      <section class="view active" id="v-dashboard">
+        <div class="ph">
+          <div><h1 id="dashHi">Good morning, Firoze</h1><p id="dashSub">Here's what needs your attention today across the Institute.</p></div>
+          <button class="btn btn-primary" onclick="nav('initiate')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Initiate New File</button>
         </div>
-        <div class="card-bd">
-          <div class="field">
-            <label>Recipient Department <span class="req">*</span></label>
-            <select class="control" id="f-dept" onchange="updateRoute()">
-              <option value="" disabled selected>Select department…</option>
-              <option>Establishment</option>
-              <option>Finance &amp; Accounts</option>
-              <option selected>Academic Affairs</option>
-              <option>Research &amp; Development</option>
-              <option>Stores &amp; Purchase</option>
-              <option>Estate &amp; Works</option>
-            </select>
-          </div>
 
-          <div class="field">
-            <label>Recipient Section <span class="req">*</span></label>
-            <select class="control" id="f-section" onchange="updateRoute()">
-              <option value="" disabled>Select section…</option>
-              <option>Academic Section – I (UG)</option>
-              <option selected>Academic Section – II (PG)</option>
-              <option>Examinations</option>
-              <option>Student Affairs</option>
-            </select>
-          </div>
+        <div class="stat-grid">
+          <div class="stat"><div class="strip" style="background:var(--navy)"></div><div class="lab">Files Created</div><div class="val">128</div><div class="tr up">▲ 12 this month</div></div>
+          <div class="stat"><div class="strip" style="background:var(--inprog)"></div><div class="lab">Pending</div><div class="val">23</div><div class="tr down">▲ 4 vs last wk</div></div>
+          <div class="stat"><div class="strip" style="background:var(--gold)"></div><div class="lab">Awaiting Action</div><div class="val">9</div><div class="tr">on you</div></div>
+          <div class="stat"><div class="strip" style="background:var(--appr)"></div><div class="lab">Approved</div><div class="val">81</div><div class="tr up">▲ 9</div></div>
+          <div class="stat"><div class="strip" style="background:var(--rej)"></div><div class="lab">Rejected</div><div class="val">6</div><div class="tr">—</div></div>
+          <div class="stat"><div class="strip" style="background:var(--ret)"></div><div class="lab">Returned</div><div class="val">11</div><div class="tr down">▲ 2</div></div>
+          <div class="stat"><div class="strip" style="background:var(--canc)"></div><div class="lab">Cancelled</div><div class="val">7</div><div class="tr">—</div></div>
+        </div>
 
-          <div class="field">
-            <label>Recipient Official <span class="req">*</span></label>
-            <div class="search-wrap">
-              <span class="si"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8A93A8" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></span>
-              <input class="control" id="f-official" placeholder="Search official by name or designation…" value="Dr. A. Venkatesh — Deputy Registrar" autocomplete="off" onfocus="openDD()" onclick="openDD()" oninput="updateRoute()">
-              <div class="dd" id="dd-official">
-                <div class="dd-item" onclick="pickOfficial('Dr. A. Venkatesh','Deputy Registrar (Academic)','AV')">
-                  <div class="av">AV</div><div class="nm"><b>Dr. A. Venkatesh</b><span>Deputy Registrar (Academic)</span></div>
-                </div>
-                <div class="dd-item" onclick="pickOfficial('Smt. P. Lakshmi','Assistant Registrar','PL')">
-                  <div class="av">PL</div><div class="nm"><b>Smt. P. Lakshmi</b><span>Assistant Registrar</span></div>
-                </div>
-                <div class="dd-item" onclick="pickOfficial('Sri M. Rao','Section Officer (PG)','MR')">
-                  <div class="av">MR</div><div class="nm"><b>Sri M. Rao</b><span>Section Officer (PG)</span></div>
-                </div>
-                <div class="dd-item" onclick="pickOfficial('Dr. S. Iyer','Associate Dean (Academic)','SI')">
-                  <div class="av">SI</div><div class="nm"><b>Dr. S. Iyer</b><span>Associate Dean (Academic)</span></div>
-                </div>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-hd"><h3>Monthly File Movement</h3><span class="more">FY 2025–26</span></div>
+            <div class="card-bd"><div class="chart-box"><canvas id="chMovement"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><h3>Pending Approvals</h3><span class="more" onclick="nav('inprogress')">View all</span></div>
+            <div class="card-bd" style="padding-top:6px">
+              <div class="appr-row"><span class="st st-inprog" style="width:24px;height:24px;border-radius:7px;padding:0;justify-content:center" title="High"><span style="position:absolute" hidden></span></span><div class="ar-b"><div class="no mono">NITK/2026/PROC/0142</div><div class="sj">Procurement — HPC server cluster</div></div><span class="pri pri-high">High</span></div>
+              <div class="appr-row"><span class="st st-inprog" style="width:24px;height:24px;border-radius:7px;padding:0;justify-content:center"></span><div class="ar-b"><div class="no mono">NITK/2026/TRVL/0210</div><div class="sj">Conference travel — ICML 2026</div></div><span class="pri pri-med">Medium</span></div>
+              <div class="appr-row"><span class="st st-inprog" style="width:24px;height:24px;border-radius:7px;padding:0;justify-content:center"></span><div class="ar-b"><div class="no mono">NITK/2026/RECR/0061</div><div class="sj">Recruitment — Lab Technician (Civil)</div></div><span class="pri pri-low">Low</span></div>
+              <div class="appr-row"><span class="st st-inprog" style="width:24px;height:24px;border-radius:7px;padding:0;justify-content:center"></span><div class="ar-b"><div class="no mono">NITK/2026/GRNT/0188</div><div class="sj">Research grant — SERB project advance</div></div><span class="pri pri-high">High</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-grid-3">
+          <div class="card">
+            <div class="card-hd"><h3>Department-wise Status</h3></div>
+            <div class="card-bd"><div class="chart-sm"><canvas id="chDept"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><h3>Average Approval Time</h3></div>
+            <div class="card-bd"><div class="chart-sm"><canvas id="chAppr"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><h3>Quick Actions</h3></div>
+            <div class="card-bd">
+              <div class="qa-grid">
+                <div class="qa" onclick="nav('initiate')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span>New File</span></div>
+                <div class="qa" onclick="nav('inprogress')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Track Files</span></div>
+                <div class="qa" onclick="nav('escalation')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg><span>Escalations</span></div>
+                <div class="qa" onclick="nav('reports')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="13" y="7" width="3" height="11"/></svg><span>Reports</span></div>
               </div>
             </div>
           </div>
-
-          <div class="field">
-            <label>Remarks / Instructions <span class="hint">optional</span></label>
-            <textarea class="control" id="f-remarks" placeholder="Add a note for the recipient — e.g. &quot;Please examine and put up for approval.&quot;">Forwarded for examination. Kindly verify clauses 4–7 and put up with recommendation.</textarea>
-          </div>
         </div>
-        <div class="form-foot">
-          <span class="note">File <span class="mono">IITH/ACAD/2026/0511</span> will be moved out of your inbox.</span>
-          <button class="btn btn-primary" onclick="sendFile()">Send File</button>
-        </div>
-      </div>
 
-      <!-- right: context -->
-      <div class="card selfile">
-        <div class="card-hd">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2E3C7E" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-          <h2>Selected file</h2>
-        </div>
-        <div class="card-bd">
-          <div class="fc-top" style="margin-bottom:10px">
-            <span class="badge b-elec">● Electronic</span>
-          </div>
-          <div class="row"><span class="k">File No.</span><span class="v mono">IITH/ACAD/2026/0511</span></div>
-          <div class="row"><span class="k">Subject</span><span class="v" style="max-width:160px">Revision of Ph.D. Ordinance</span></div>
-          <div class="row"><span class="k">Current holder</span><span class="v">R. Subramanian</span></div>
-          <div class="row"><span class="k">Pages</span><span class="v">14 (+ 3 enclosures)</span></div>
-          <div class="row"><span class="k">Priority</span><span class="v">Routine</span></div>
-
-          <div class="route-prev">
-            <div class="rp-h">Movement preview</div>
-            <div class="rp-line"><span>R. Subramanian</span> <span class="arrow">→</span> <span id="route-to">Dr. A. Venkatesh</span></div>
-            <div class="rp-line" style="margin-top:5px;color:var(--ink-soft);font-size:11.5px" id="route-dept">Academic Affairs · Academic Section – II (PG)</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ HISTORY ============ -->
-  <section class="screen" id="history">
-    <div class="page-head">
-      <h1>File Movement History</h1>
-      <p>Every movement of this file, in order — for full transparency and accountability.</p>
-    </div>
-
-    <div class="hist-toolbar">
-      <div class="hist-file">
-        <div class="hf-icon"><span class="p-chip">P</span></div>
-        <div>
-          <h2 class="mono">IITH/F&amp;A/2026/0098</h2>
-          <div class="sub">Annual Maintenance Contract — Lab Equipment <span class="badge b-phys" style="margin-left:6px"><span class="p-chip" style="width:14px;height:14px;font-size:9px">P</span> Physical</span></div>
-        </div>
-      </div>
-      <div class="seg" id="hist-seg">
-        <button class="active" onclick="setHistView('timeline',this)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.5" fill="currentColor"/><circle cx="3.5" cy="12" r="1.5" fill="currentColor"/><circle cx="3.5" cy="18" r="1.5" fill="currentColor"/></svg>
-          Timeline
-        </button>
-        <button onclick="setHistView('table',this)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
-          Table
-        </button>
-      </div>
-    </div>
-
-    <!-- timeline view -->
-    <div id="hist-timeline" class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot sent"></div>
-        <div class="tl-card">
-          <div class="tl-head">
-            <div class="tl-move">
-              <div class="who"><b>Sri J. Prasad</b><span>Junior Assistant · Stores &amp; Purchase</span></div>
-              <span class="arr">→</span>
-              <div class="who"><b>Smt. D. Reddy</b><span>Section Officer · Stores &amp; Purchase</span></div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-              <span class="st st-received">Received</span>
-              <span class="tl-time mono">15 Jun · 09:40 AM</span>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-hd"><h3>Recent Activity</h3></div>
+            <div class="card-bd" style="padding-top:8px">
+              <div class="act-item"><div class="act-dot" style="background:var(--appr-s);color:var(--appr)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div><div class="ai-b"><p><b>Sanjay Gupta</b> approved &amp; released funds for <b class="mono" style="font-weight:600">NITK/2026/PROC/0119</b></p><div class="t">Finance Officer · 35 min ago</div></div></div>
+              <div class="act-item"><div class="act-dot" style="background:var(--ret-s);color:var(--ret)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a4 4 0 0 1 0 8h-1"/></svg></div><div class="ai-b"><p><b>Dr. Kavita Nair</b> returned <b class="mono" style="font-weight:600">NITK/2026/TRVL/0210</b> for clarification</p><div class="t">Reviewing Officer · 2 hrs ago</div></div></div>
+              <div class="act-item"><div class="act-dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></div><div class="ai-b"><p><b>Firoze </b> forwarded <b class="mono" style="font-weight:600">NITK/2026/GRNT/0188</b> to Dealing Assistant</p><div class="t">Initiator · 4 hrs ago</div></div></div>
+              <div class="act-item"><div class="act-dot" style="background:var(--esc-s);color:var(--esc)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></div><div class="ai-b"><p>File <b class="mono" style="font-weight:600">NITK/2026/RECR/0061</b> auto-escalated to Section Head (pending 6 days)</p><div class="t">System · Yesterday</div></div></div>
             </div>
           </div>
-          <div class="tl-remark"><b>Remarks:</b> Bill received from vendor. Initiating file for payment processing.</div>
-        </div>
-      </div>
-
-      <div class="tl-item">
-        <div class="tl-dot sent"></div>
-        <div class="tl-card">
-          <div class="tl-head">
-            <div class="tl-move">
-              <div class="who"><b>Smt. D. Reddy</b><span>Section Officer · Stores &amp; Purchase</span></div>
-              <span class="arr">→</span>
-              <div class="who"><b>Sri B. Kumar</b><span>Assistant Registrar · Finance &amp; Accounts</span></div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-              <span class="st st-received">Received</span>
-              <span class="tl-time mono">15 Jun · 03:22 PM</span>
+          <div class="card">
+            <div class="card-hd"><h3>Workflow Status Summary</h3></div>
+            <div class="card-bd">
+              <div class="chart-sm" style="height:220px"><canvas id="chStatus"></canvas></div>
             </div>
           </div>
-          <div class="tl-remark"><b>Remarks:</b> Verified against PO. Forwarded to F&amp;A for budget check and sanction.</div>
         </div>
-      </div>
+      </section>
 
-      <div class="tl-item">
-        <div class="tl-dot received"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
-        <div class="tl-card">
-          <div class="tl-head">
-            <div class="tl-move">
-              <div class="who"><b>Sri B. Kumar</b><span>Assistant Registrar · Finance &amp; Accounts</span></div>
-              <span class="arr">→</span>
-              <div class="who"><b>R. Subramanian</b><span>Section Officer · Establishment</span></div>
+      <!-- ===== INITIATE FILE ===== -->
+      <section class="view" id="v-initiate">
+        <div class="ph"><div><h1>Initiate File</h1><p>Create a new file request. It will route through the configured approval chain automatically.</p></div></div>
+        <div class="fd-grid">
+          <div class="card">
+            <div class="card-hd"><h3>File details</h3></div>
+            <div class="card-bd">
+              <div class="grid2">
+                <div class="field"><label>File Number</label><input class="control mono" value="NITK/2026/PROC/0221" readonly style="background:var(--surface-2);color:var(--ink-soft)"></div>
+                <div class="field"><label>Request Type <span class="req">*</span></label><select class="control"><option>Procurement</option><option>Travel / TA-DA</option><option>Recruitment</option><option>Research Grant</option><option>Equipment Purchase</option><option>Reimbursement</option></select></div>
+              </div>
+              <div class="field"><label>Subject <span class="req">*</span></label><input class="control" placeholder="e.g. Procurement of laboratory microscopes — Physical Sciences"></div>
+              <div class="grid2">
+                <div class="field"><label>Department <span class="req">*</span></label><select class="control"><option>Computer Science &amp; Engineering</option><option>Mechanical Engineering</option><option>Civil Engineering</option><option>Physical Sciences</option><option>Management Studies</option></select></div>
+                <div class="field"><label>Priority <span class="req">*</span></label><select class="control"><option>Routine</option><option>Medium</option><option>High</option><option>Urgent</option></select></div>
+              </div>
+              <div class="field"><label>Purpose / Justification <span class="req">*</span></label><textarea class="control" placeholder="Describe the purpose and justification for this request…"></textarea></div>
+              <div class="grid2">
+                <div class="field"><label>Amount Requested (₹)</label><input class="control" placeholder="0.00"></div>
+                <div class="field"><label>Budget Head</label><select class="control"><option>Plan — Equipment</option><option>Non-Plan — Contingency</option><option>Project — SERB</option></select></div>
+              </div>
+              <div class="field"><label>Remarks</label><textarea class="control" placeholder="Any additional remarks…" style="min-height:60px"></textarea></div>
+              <div class="field" style="margin-bottom:0">
+                <label>Supporting Documents</label>
+                <div class="upload"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><p>Drag files here or click to upload</p><span>PDF, DOC/DOCX, XLS/XLSX, JPG/PNG — up to 25 MB each</span></div>
+                <div class="file-chip"><span class="ext ext-pdf">PDF</span> quotation_vendor_A.pdf <span style="margin-left:auto;color:var(--ink-faint)">412 KB</span></div>
+                <div class="file-chip"><span class="ext ext-xls">XLS</span> price_comparison.xlsx <span style="margin-left:auto;color:var(--ink-faint)">88 KB</span></div>
+              </div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-              <span class="st st-received">Received</span>
-              <span class="tl-time mono">16 Jun · 11:05 AM</span>
+            <div class="act-bar" style="justify-content:flex-end">
+              <button class="btn btn-outline">Save as draft</button>
+              <button class="btn btn-primary" onclick="showToast('File NITK/2026/PROC/0221 submitted to Dealing Assistant')">Submit File</button>
             </div>
           </div>
-          <div class="tl-remark"><b>Remarks:</b> Budget available under head 4.2. Physical bill enclosed (3 pp.) — sent by hand.</div>
-        </div>
-      </div>
 
-      <div class="tl-item">
-        <div class="tl-dot pending"></div>
-        <div class="tl-card">
-          <div class="tl-head">
-            <div class="tl-move">
-              <div class="who"><b>R. Subramanian</b><span>Section Officer · Establishment</span></div>
-              <span class="arr">→</span>
-              <div class="who"><b>Dr. A. Venkatesh</b><span>Deputy Registrar · Academic Affairs</span></div>
+          <div class="card">
+            <div class="card-hd"><h3>Approval chain</h3></div>
+            <div class="card-bd">
+              <p style="font-size:12.5px;color:var(--ink-soft);margin-bottom:16px">On submission the file moves through these stages in order. Any officer may approve, return, or reject.</p>
+              <div style="display:flex;flex-direction:column;gap:0">
+                <div class="stage" style="border:none;padding:8px 0"><span class="num" style="background:var(--navy)">1</span><div style="flex:1"><div class="sn" style="font-size:13px">Dealing Assistant</div></div></div>
+                <div style="width:2px;height:10px;background:var(--line-strong);margin-left:13px"></div>
+                <div class="stage" style="border:none;padding:8px 0"><span class="num" style="background:var(--navy)">2</span><div style="flex:1"><div class="sn" style="font-size:13px">Reporting Officer</div></div></div>
+                <div style="width:2px;height:10px;background:var(--line-strong);margin-left:13px"></div>
+                <div class="stage" style="border:none;padding:8px 0"><span class="num" style="background:var(--navy)">3</span><div style="flex:1"><div class="sn" style="font-size:13px">Reviewing Officer</div></div></div>
+                <div style="width:2px;height:10px;background:var(--line-strong);margin-left:13px"></div>
+                <div class="stage" style="border:none;padding:8px 0"><span class="num" style="background:var(--navy)">4</span><div style="flex:1"><div class="sn" style="font-size:13px">Academic Section</div></div></div>
+                <div style="width:2px;height:10px;background:var(--line-strong);margin-left:13px"></div>
+                <div class="stage" style="border:none;padding:8px 0"><span class="num" style="background:var(--navy)">5</span><div style="flex:1"><div class="sn" style="font-size:13px">Establishment Section</div></div></div>
+                <div style="width:2px;height:10px;background:var(--line-strong);margin-left:13px"></div>
+                <div class="stage" style="border:none;padding:8px 0"><span class="num" style="background:var(--navy)">6</span><div style="flex:1"><div class="sn" style="font-size:13px">Research &amp; External Affairs</div></div></div>
+                <div style="width:2px;height:10px;background:var(--line-strong);margin-left:13px"></div>
+                <div class="stage" style="border:none;padding:8px 0"><span class="num" style="background:var(--navy)">7</span><div style="flex:1"><div class="sn" style="font-size:13px">Finance Section</div></div></div>
+                <div style="width:2px;height:10px;background:var(--line-strong);margin-left:13px"></div>
+                <div class="stage" style="border:none;padding:8px 0"><span class="num" style="background:var(--gold);color:#3a2a0e">8</span><div style="flex:1"><div class="sn" style="font-size:13px">Finance Officer</div><div class="sr">Final approval &amp; fund release</div></div></div>
+              </div>
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-              <span class="st st-pending">Pending Physical Receipt</span>
-              <span class="tl-time mono">18 Jun · 02:10 PM</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== FILE DETAIL (workflow) ===== -->
+      <section class="view" id="v-detail">
+        <div class="ph">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><h1 class="mono" style="font-size:18px">NITK/2026/PROC/0142</h1><span class="st st-inprog">In Progress</span><span class="pri pri-high">High</span></div>
+            <p>Procurement — HPC server cluster · Computer Science &amp; Engineering</p>
+          </div>
+          <button class="btn btn-ghost" onclick="nav('inprogress')">← Back to list</button>
+        </div>
+
+        <!-- chain tracker -->
+        <div class="card" style="margin-bottom:18px"><div class="card-bd" style="overflow-x:auto">
+          <div class="chain">
+            <div class="node done"><div class="nc">✓</div><div class="nl">Initiator</div></div><div class="link done"></div>
+            <div class="node done"><div class="nc">✓</div><div class="nl">Dealing Asst.</div></div><div class="link done"></div>
+            <div class="node done"><div class="nc">✓</div><div class="nl">Reporting Off.</div></div><div class="link"></div>
+            <div class="node current"><div class="nc">4</div><div class="nl">Reviewing Off.</div></div><div class="link"></div>
+            <div class="node"><div class="nc">5</div><div class="nl">Academic</div></div><div class="link"></div>
+            <div class="node"><div class="nc">6</div><div class="nl">Establish.</div></div><div class="link"></div>
+            <div class="node"><div class="nc">7</div><div class="nl">RE Office</div></div><div class="link"></div>
+            <div class="node"><div class="nc">8</div><div class="nl">Finance</div></div>
+          </div>
+        </div></div>
+
+        <div class="fd-grid">
+          <div class="card">
+            <div class="card-hd"><h3>File history &amp; audit trail</h3><span class="more">8 entries</span></div>
+            <div class="card-bd">
+              <div class="timeline">
+                <div class="tl-item"><div class="tl-dot cur"></div><div class="tl-row"><div class="h"><b>Awaiting — Dr. Kavita Nair</b><span class="t">Now</span></div><div class="desig">Reviewing Officer</div><div class="rm">Pending review since 17 Jun, 09:10 AM.</div></div></div>
+                <div class="tl-item"><div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="tl-row"><div class="h"><b>Sunil Mehta · Forwarded</b><span class="t">16 Jun, 04:20 PM</span></div><div class="desig">Reporting Officer</div><div class="rm"><b>Remarks:</b> Specs verified against requirement. Recommended — forward to Reviewing Officer.</div></div></div>
+                <div class="tl-item"><div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="tl-row"><div class="h"><b>Rakesh Verma · Approved</b><span class="t">16 Jun, 11:02 AM</span></div><div class="desig">Dealing Assistant</div><div class="rm"><b>Remarks:</b> Three vendor quotes attached. L1 vendor identified. ✓ added comparison sheet.</div></div></div>
+                <div class="tl-item"><div class="tl-dot ok"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><div class="tl-row"><div class="h"><b>Firoze  · Created file</b><span class="t">15 Jun, 10:30 AM</span></div><div class="desig">Initiator / Case Worker</div><div class="rm"><b>Remarks:</b> HPC cluster required for ML research lab. Amount ₹48,50,000. 2 documents uploaded.</div></div></div>
+              </div>
+            </div>
+            <div class="act-bar">
+              <button class="btn btn-appr" onclick="showToast('File approved &amp; forwarded to Academic Section')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Approve</button>
+              <button class="btn btn-rej" onclick="showToast('File rejected — initiator notified')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Reject</button>
+              <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a4 4 0 0 1 0 8h-1"/></svg> Return for Clarification</button>
+              <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg> Forward</button>
+              <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload</button>
+              <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg> Reassign</button>
             </div>
           </div>
-          <div class="tl-remark"><b>Remarks:</b> Physical file dispatched via despatch rider. Awaiting confirmation of receipt at recipient end.</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- table view -->
-    <div id="hist-table" class="table-wrap" style="display:none">
-      <table>
-        <thead>
-          <tr><th>Sent By</th><th>Sent To</th><th>Designation</th><th>Date &amp; Time</th><th>Status</th><th>Remarks</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="cell-name"><b>Sri J. Prasad</b><span>Stores &amp; Purchase</span></td>
-            <td class="cell-name"><b>Smt. D. Reddy</b><span>Stores &amp; Purchase</span></td>
-            <td>Junior Assistant</td>
-            <td class="mono" style="font-size:12px">15 Jun, 09:40 AM</td>
-            <td><span class="st st-received">Received</span></td>
-            <td style="color:var(--ink-soft);font-size:12.5px">Bill received from vendor.</td>
-          </tr>
-          <tr>
-            <td class="cell-name"><b>Smt. D. Reddy</b><span>Stores &amp; Purchase</span></td>
-            <td class="cell-name"><b>Sri B. Kumar</b><span>Finance &amp; Accounts</span></td>
-            <td>Section Officer</td>
-            <td class="mono" style="font-size:12px">15 Jun, 03:22 PM</td>
-            <td><span class="st st-received">Received</span></td>
-            <td style="color:var(--ink-soft);font-size:12.5px">Verified against PO.</td>
-          </tr>
-          <tr>
-            <td class="cell-name"><b>Sri B. Kumar</b><span>Finance &amp; Accounts</span></td>
-            <td class="cell-name"><b>R. Subramanian</b><span>Establishment</span></td>
-            <td>Assistant Registrar</td>
-            <td class="mono" style="font-size:12px">16 Jun, 11:05 AM</td>
-            <td><span class="st st-received">Received</span></td>
-            <td style="color:var(--ink-soft);font-size:12.5px">Budget available. Physical bill enclosed.</td>
-          </tr>
-          <tr>
-            <td class="cell-name"><b>R. Subramanian</b><span>Establishment</span></td>
-            <td class="cell-name"><b>Dr. A. Venkatesh</b><span>Academic Affairs</span></td>
-            <td>Section Officer</td>
-            <td class="mono" style="font-size:12px">18 Jun, 02:10 PM</td>
-            <td><span class="st st-pending">Pending Physical Receipt</span></td>
-            <td style="color:var(--ink-soft);font-size:12.5px">Physical file dispatched via rider.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ============ PHYSICAL TRACKING ============ -->
-  <section class="screen" id="physical">
-    <div class="page-head">
-      <h1>Physical File Tracking</h1>
-      <p>Paper files moving through the office, tracked digitally. Confirm receipt to sync the digital record with the physical location.</p>
-    </div>
-
-    <div class="ptrack-note">
-      <span class="pn-ic"><span class="p-chip">P</span></span>
-      <div>
-        <h3>Hybrid file handling</h3>
-        <p>Files marked with a <b>P</b> badge exist on paper. The digital record stays in <b>Pending Physical Receipt</b> until the recipient physically receives the file and clicks <b>Receive / OK</b>.</p>
-      </div>
-    </div>
-
-    <div class="file-list">
-      <div class="file-card">
-        <div class="fc-icon"><span class="p-chip">P</span></div>
-        <div class="fc-body">
-          <div class="fc-top">
-            <span class="fc-no mono">IITH/F&amp;A/2026/0098</span>
-            <span class="badge b-phys"><span class="p-chip" style="width:14px;height:14px;font-size:9px">P</span> Physical</span>
-          </div>
-          <h3>Annual Maintenance Contract — Lab Equipment (Bill)</h3>
-          <div class="fc-sub"><span>Dispatched by <b>R. Subramanian</b></span><span>To <b>Dr. A. Venkatesh</b></span><span>18 Jun, 02:10 PM</span></div>
-        </div>
-        <div class="fc-right" id="phys-track-1">
-          <span class="st st-pending">Pending Physical Receipt</span>
-          <button class="btn btn-recv btn-sm" onclick="confirmReceipt('phys-track-1', this)">✓ Receive / OK</button>
-        </div>
-      </div>
-
-      <div class="file-card">
-        <div class="fc-icon"><span class="p-chip">P</span></div>
-        <div class="fc-body">
-          <div class="fc-top">
-            <span class="fc-no mono">IITH/EST/2026/0137</span>
-            <span class="badge b-phys"><span class="p-chip" style="width:14px;height:14px;font-size:9px">P</span> Physical</span>
-          </div>
-          <h3>Service Book Updation — Sri K. Mahesh (Sr. Tech.)</h3>
-          <div class="fc-sub"><span>Dispatched by <b>Establishment-II</b></span><span>To <b>R. Subramanian</b></span><span>17 Jun, 11:02 AM</span></div>
-        </div>
-        <div class="fc-right" id="phys-track-2">
-          <span class="st st-pending">Pending Physical Receipt</span>
-          <button class="btn btn-recv btn-sm" onclick="confirmReceipt('phys-track-2', this)">✓ Receive / OK</button>
-        </div>
-      </div>
-
-      <div class="file-card">
-        <div class="fc-icon" style="background:var(--received-soft);border-color:#cfe6d7"><span class="p-chip">P</span></div>
-        <div class="fc-body">
-          <div class="fc-top">
-            <span class="fc-no mono">IITH/EW/2026/0044</span>
-            <span class="badge b-phys"><span class="p-chip" style="width:14px;height:14px;font-size:9px">P</span> Physical</span>
-          </div>
-          <h3>Building Renovation — Measurement Book (Block C)</h3>
-          <div class="fc-sub"><span>Dispatched by <b>Estate &amp; Works</b></span><span>To <b>R. Subramanian</b></span><span>16 Jun, 03:30 PM</span></div>
-        </div>
-        <div class="fc-right">
-          <span class="st st-received">Received · synced</span>
-          <span style="font-size:11.5px;color:var(--ink-faint)">Confirmed 16 Jun, 04:12 PM</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ ADVANCED ============ -->
-  <section class="screen" id="advanced">
-    <div class="page-head">
-      <h1>Advanced</h1>
-      <p>Optional capabilities for cross-instance movement and large-scale file handover.</p>
-    </div>
-
-    <div class="adv-grid">
-      <!-- inter-instance -->
-      <div class="adv-card">
-        <div class="ac-ic blue">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E3C7E" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <h3>Inter-Instance Transfer</h3>
-        <p>Move files securely across different government or server instances, with the full movement trail preserved end to end.</p>
-        <div class="ac-ex">
-          <span class="ex-node">Central Government</span>
-          <span class="ex-arrow">⇄</span>
-          <span class="ex-node">State Government</span>
-        </div>
-        <div class="ac-foot">
-          <span class="lbl">Enabled for this office</span>
-          <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-        </div>
-      </div>
-
-      <!-- bulk transfer -->
-      <div class="adv-card">
-        <div class="ac-ic orange">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C2410C" stroke-width="2"><rect x="2" y="7" width="9" height="14" rx="1.5"/><rect x="13" y="3" width="9" height="14" rx="1.5"/><path d="M11 14h2"/></svg>
-        </div>
-        <h3>Bulk File Transfer <span class="pill">Admin only</span></h3>
-        <p>Reassign every file held by one employee to another in a single action — for transfers, retirement, or change of role.</p>
-        <div class="bulk-flow">
-          <div class="bulk-emp">
-            <div class="be-l">From</div>
-            <div class="be-n">Sri B. Kumar</div>
-            <div class="be-c">37 files · retiring 30 Jun</div>
-          </div>
-          <div class="bulk-arrow">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </div>
-          <div class="bulk-emp">
-            <div class="be-l">To</div>
-            <div class="be-n">Smt. P. Lakshmi</div>
-            <div class="be-c">Assistant Registrar</div>
+          <div>
+            <div class="card" style="margin-bottom:18px">
+              <div class="card-hd"><h3>File metadata</h3></div>
+              <div class="card-bd">
+                <div class="meta-row"><span class="k">File No.</span><span class="v mono">NITK/2026/PROC/0142</span></div>
+                <div class="meta-row"><span class="k">Type</span><span class="v">Procurement</span></div>
+                <div class="meta-row"><span class="k">Department</span><span class="v">CSE</span></div>
+                <div class="meta-row"><span class="k">Initiator</span><span class="v">Firoze </span></div>
+                <div class="meta-row"><span class="k">Amount</span><span class="v">₹48,50,000</span></div>
+                <div class="meta-row"><span class="k">Created</span><span class="v">15 Jun 2026</span></div>
+                <div class="meta-row"><span class="k">Pending since</span><span class="v" style="color:var(--inprog)">2 days</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-hd"><h3>Documents</h3></div>
+              <div class="card-bd">
+                <div class="file-chip" style="margin-top:0"><span class="ext ext-pdf">PDF</span> tender_specs.pdf <span style="margin-left:auto;color:var(--ink-faint)">1.2 MB</span></div>
+                <div class="file-chip"><span class="ext ext-xls">XLS</span> quote_comparison.xlsx <span style="margin-left:auto;color:var(--ink-faint)">92 KB</span></div>
+                <div class="file-chip"><span class="ext ext-pdf">PDF</span> vendor_quote_L1.pdf <span style="margin-left:auto;color:var(--ink-faint)">512 KB</span></div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="ac-foot">
-          <span class="lbl">Requires admin approval</span>
-          <button class="btn btn-outline btn-sm" onclick="showToast('Bulk transfer of 37 files queued for admin approval')">Start transfer</button>
+      </section>
+
+      <!-- ===== FILES IN PROGRESS ===== -->
+      <section class="view" id="v-inprogress">
+        <div class="ph"><div><h1>Files In Progress</h1><p>Active files moving through the approval workflow.</p></div></div>
+        <div class="tbl-tools">
+          <div class="fsearch"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input placeholder="File number…"></div>
+          <select class="fsel"><option>All Departments</option><option>CSE</option><option>Mechanical</option><option>Civil</option><option>Physical Sciences</option></select>
+          <select class="fsel"><option>All Status</option><option>In Progress</option><option>Returned</option><option>Escalated</option></select>
+          <select class="fsel"><option>Any Officer</option><option>Dealing Assistant</option><option>Reviewing Officer</option><option>Finance Officer</option></select>
+          <select class="fsel"><option>Any Amount</option><option>&lt; ₹1 L</option><option>₹1 L – ₹10 L</option><option>&gt; ₹10 L</option></select>
+          <button class="btn btn-outline btn-sm" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>
         </div>
-      </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>File No.</th><th>Subject</th><th>Current Officer</th><th>Status</th><th>Pending Since</th><th>Priority</th><th>Last Updated</th></tr></thead>
+            <tbody>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/PROC/0142</td><td class="cn"><b>HPC server cluster</b><span>Procurement · CSE</span></td><td class="cn"><b>Dr. Kavita Nair</b><span>Reviewing Officer</span></td><td><span class="st st-inprog">In Progress</span></td><td style="color:var(--inprog);font-weight:600">2 days</td><td><span class="pri pri-high">High</span></td><td style="color:var(--ink-soft)">16 Jun</td></tr>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/TRVL/0210</td><td class="cn"><b>Conference travel — ICML</b><span>Travel · CSE</span></td><td class="cn"><b>Firoze </b><span>Initiator (returned)</span></td><td><span class="st st-ret">Returned</span></td><td style="font-weight:600">5 hrs</td><td><span class="pri pri-med">Medium</span></td><td style="color:var(--ink-soft)">18 Jun</td></tr>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/RECR/0061</td><td class="cn"><b>Lab Technician (Civil)</b><span>Recruitment · Civil</span></td><td class="cn"><b>Meena Iyer</b><span>Establishment Section</span></td><td><span class="st st-esc">Escalated</span></td><td style="color:var(--esc);font-weight:600">6 days</td><td><span class="pri pri-low">Low</span></td><td style="color:var(--ink-soft)">12 Jun</td></tr>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/GRNT/0188</td><td class="cn"><b>SERB project advance</b><span>Research Grant · Physical Sci.</span></td><td class="cn"><b>Dr. Arjun Reddy</b><span>Research &amp; External Affairs</span></td><td><span class="st st-inprog">In Progress</span></td><td style="font-weight:600">1 day</td><td><span class="pri pri-high">High</span></td><td style="color:var(--ink-soft)">17 Jun</td></tr>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/EQIP/0094</td><td class="cn"><b>Lathe machine — workshop</b><span>Equipment · Mechanical</span></td><td class="cn"><b>Sanjay Gupta</b><span>Finance Officer</span></td><td><span class="st st-inprog">In Progress</span></td><td style="font-weight:600">3 hrs</td><td><span class="pri pri-med">Medium</span></td><td style="color:var(--ink-soft)">18 Jun</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== COMPLETED FILES ===== -->
+      <section class="view" id="v-completed">
+        <div class="ph"><div><h1>Completed Files</h1><p>Files that have exited the active workflow.</p></div></div>
+        <div class="subtabs" id="compTabs">
+          <button class="active" onclick="compTab(this)">Approved <span style="color:var(--ink-faint)">81</span></button>
+          <button onclick="compTab(this)">Rejected <span style="color:var(--ink-faint)">6</span></button>
+          <button onclick="compTab(this)">Cancelled <span style="color:var(--ink-faint)">7</span></button>
+          <button onclick="compTab(this)">Closed <span style="color:var(--ink-faint)">93</span></button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>File No.</th><th>Subject</th><th>Department</th><th>Final Status</th><th>Amount</th><th>Closed On</th></tr></thead>
+            <tbody>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/PROC/0119</td><td class="cn"><b>Network switches upgrade</b></td><td>CSE</td><td><span class="st st-appr">Approved</span></td><td>₹6,20,000</td><td style="color:var(--ink-soft)">14 Jun 2026</td></tr>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/TRVL/0177</td><td class="cn"><b>Faculty travel — workshop</b></td><td>Mechanical</td><td><span class="st st-appr">Approved</span></td><td>₹84,000</td><td style="color:var(--ink-soft)">11 Jun 2026</td></tr>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/GRNT/0151</td><td class="cn"><b>Consumables — chemistry lab</b></td><td>Physical Sciences</td><td><span class="st st-appr">Approved</span></td><td>₹2,40,000</td><td style="color:var(--ink-soft)">09 Jun 2026</td></tr>
+              <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/EQIP/0066</td><td class="cn"><b>3D printer — design studio</b></td><td>Management Studies</td><td><span class="st st-appr">Approved</span></td><td>₹3,15,000</td><td style="color:var(--ink-soft)">05 Jun 2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== ESCALATION ===== -->
+      <section class="view" id="v-escalation">
+        <div class="ph"><div><h1>Reminders &amp; Escalations</h1><p>Automated reminders fire on pendency thresholds; overdue files escalate up the hierarchy.</p></div></div>
+
+        <div class="esc-rules">
+          <div class="esc-rule r3"><div class="d">3 days</div><div class="tx">Reminder to the <b>current officer</b> holding the file.</div></div>
+          <div class="esc-rule r5"><div class="d">5 days</div><div class="tx">Reminder + alert to the <b>Section Head</b>.</div></div>
+          <div class="esc-rule r7"><div class="d">7 days</div><div class="tx">Escalation to <b>Higher Authority</b> for intervention.</div></div>
+        </div>
+
+        <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="stat"><div class="strip" style="background:var(--esc)"></div><div class="lab">Overdue Files</div><div class="val">12</div><div class="tr down">▲ 3</div></div>
+          <div class="stat"><div class="strip" style="background:var(--esc)"></div><div class="lab">Escalated</div><div class="val">3</div><div class="tr">active</div></div>
+          <div class="stat"><div class="strip" style="background:var(--inprog)"></div><div class="lab">Avg. Delay</div><div class="val">2.4<span style="font-size:13px;font-weight:500"> d</span></div><div class="tr">per file</div></div>
+          <div class="stat"><div class="strip" style="background:var(--gold)"></div><div class="lab">Reminders Sent</div><div class="val">38</div><div class="tr">this month</div></div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-hd"><h3>Overdue &amp; escalated files</h3></div>
+            <div class="table-wrap" style="border:none;box-shadow:none;border-radius:0">
+              <table style="min-width:540px">
+                <thead><tr><th>File No.</th><th>Officer</th><th>Pending</th><th>Stage</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/RECR/0061</td><td>Meena Iyer</td><td style="color:var(--esc);font-weight:600">6 days</td><td>Establishment</td><td><span class="st st-esc">Escalated</span></td></tr>
+                  <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/PROC/0103</td><td>Dr. Arjun Reddy</td><td style="color:var(--esc);font-weight:600">8 days</td><td>RE Office</td><td><span class="st st-esc">Escalated</span></td></tr>
+                  <tr onclick="nav('detail')"><td class="mono" style="color:var(--navy);font-weight:600">NITK/2026/TRVL/0140</td><td>Sunil Mehta</td><td style="color:var(--inprog);font-weight:600">5 days</td><td>Reporting Off.</td><td><span class="st st-inprog">Reminder sent</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><h3>Officer-wise Pendency</h3></div>
+            <div class="card-bd"><div class="chart-sm" style="height:260px"><canvas id="chPendency"></canvas></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== REPORTS ===== -->
+      <section class="view" id="v-reports">
+        <div class="ph"><div><h1>Reports &amp; Analytics</h1><p>Generate and export institutional file-movement reports.</p></div>
+          <button class="btn btn-outline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export PDF</button>
+        </div>
+        <div class="dash-grid-3" style="margin-bottom:18px">
+          <div class="card" style="cursor:pointer" onclick="showToast('Generating Department-wise Pendency report…')"><div class="card-bd"><div style="display:flex;gap:11px;align-items:center"><div class="act-dot" style="width:38px;height:38px;background:var(--navy-soft);color:var(--navy)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="13" y="8" width="3" height="10"/></svg></div><div><div style="font-weight:600;font-size:13.5px">Department-wise Pendency</div><div style="font-size:11.5px;color:var(--ink-soft)">Pending load by department</div></div></div></div></div>
+          <div class="card" style="cursor:pointer" onclick="showToast('Generating Officer-wise Disposal report…')"><div class="card-bd"><div style="display:flex;gap:11px;align-items:center"><div class="act-dot" style="width:38px;height:38px;background:var(--appr-s);color:var(--appr)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div><div style="font-weight:600;font-size:13.5px">Officer-wise Disposal</div><div style="font-size:11.5px;color:var(--ink-soft)">Files cleared per officer</div></div></div></div></div>
+          <div class="card" style="cursor:pointer" onclick="showToast('Generating Fund Release report…')"><div class="card-bd"><div style="display:flex;gap:11px;align-items:center"><div class="act-dot" style="width:38px;height:38px;background:var(--gold-soft);color:var(--gold)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div style="font-weight:600;font-size:13.5px">Fund Release</div><div style="font-size:11.5px;color:var(--ink-soft)">Amounts sanctioned &amp; released</div></div></div></div></div>
+        </div>
+        <div class="dash-grid">
+          <div class="card"><div class="card-hd"><h3>Monthly File Movement Report</h3><span class="more">FY 2025–26</span></div><div class="card-bd"><div class="chart-box"><canvas id="chReport"></canvas></div></div></div>
+          <div class="card"><div class="card-hd"><h3>Approval Turnaround (days)</h3></div><div class="card-bd"><div class="chart-box"><canvas id="chTurnaround"></canvas></div></div></div>
+        </div>
+      </section>
+
+      <!-- ===== WORKFLOW CONFIG (admin) ===== -->
+      <section class="view" id="v-config">
+        <div class="ph"><div><h1>Workflow Configuration</h1><p>Administrator settings for approval levels, delegations, and escalation rules.</p></div>
+          <button class="btn btn-primary" onclick="showToast('Workflow configuration saved')">Save changes</button>
+        </div>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-hd"><h3>Approval Stages</h3><span class="more">+ Add stage</span></div>
+            <div class="card-bd">
+              <div class="stage-list">
+                <div class="stage"><span class="grip">⋮⋮</span><span class="num">1</span><div style="flex:1"><div class="sn">Dealing Assistant</div><div class="sr">Document verification</div></div><div class="toggle on"></div></div>
+                <div class="stage"><span class="grip">⋮⋮</span><span class="num">2</span><div style="flex:1"><div class="sn">Reporting Officer</div><div class="sr">Recommendation</div></div><div class="toggle on"></div></div>
+                <div class="stage"><span class="grip">⋮⋮</span><span class="num">3</span><div style="flex:1"><div class="sn">Reviewing Officer</div><div class="sr">Review &amp; concurrence</div></div><div class="toggle on"></div></div>
+                <div class="stage"><span class="grip">⋮⋮</span><span class="num">4</span><div style="flex:1"><div class="sn">Academic Section</div><div class="sr">Academic clearance</div></div><div class="toggle on"></div></div>
+                <div class="stage"><span class="grip">⋮⋮</span><span class="num">5</span><div style="flex:1"><div class="sn">Establishment Section</div><div class="sr">Establishment check</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+                <div class="stage"><span class="grip">⋮⋮</span><span class="num">6</span><div style="flex:1"><div class="sn">Research &amp; External Affairs</div><div class="sr">Project funds verification</div></div><div class="toggle on"></div></div>
+                <div class="stage"><span class="grip">⋮⋮</span><span class="num">7</span><div style="flex:1"><div class="sn">Finance Section</div><div class="sr">Budget check</div></div><div class="toggle on"></div></div>
+                <div class="stage" style="border-color:var(--gold)"><span class="grip">⋮⋮</span><span class="num" style="background:var(--gold);color:#3a2a0e">8</span><div style="flex:1"><div class="sn">Finance Officer</div><div class="sr">Final approval &amp; fund release</div></div><div class="toggle on"></div></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:18px">
+              <div class="card-hd"><h3>Escalation Rules</h3></div>
+              <div class="card-bd">
+                <div class="field" style="margin-bottom:12px"><label>Reminder to current officer</label><div style="display:flex;gap:8px;align-items:center"><input class="control" value="3" style="width:70px"><span style="font-size:13px;color:var(--ink-soft)">days pending</span></div></div>
+                <div class="field" style="margin-bottom:12px"><label>Escalate to Section Head</label><div style="display:flex;gap:8px;align-items:center"><input class="control" value="5" style="width:70px"><span style="font-size:13px;color:var(--ink-soft)">days pending</span></div></div>
+                <div class="field" style="margin-bottom:0"><label>Escalate to Higher Authority</label><div style="display:flex;gap:8px;align-items:center"><input class="control" value="7" style="width:70px"><span style="font-size:13px;color:var(--ink-soft)">days pending</span></div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-hd"><h3>Notification Channels</h3></div>
+              <div class="card-bd">
+                <div class="stage" style="border:none;padding:8px 0"><div style="flex:1"><div class="sn">Dashboard alerts</div></div><div class="toggle on"></div></div>
+                <div class="stage" style="border:none;padding:8px 0"><div style="flex:1"><div class="sn">Email notifications</div></div><div class="toggle on"></div></div>
+                <div class="stage" style="border:none;padding:8px 0"><div style="flex:1"><div class="sn">SMS notifications</div><div class="sr">Mock gateway</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
-  </section>
-
-</main>
-
-<div class="toast" id="toast">
-  <span class="tc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span>
-  <span id="toast-msg">Done</span>
+  </div>
 </div>
 
+<div class="toast" id="toast"><span class="tc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span><span id="toast-msg">Done</span></div>
+
 <script>
-  // ---- tab switching ----
-  const tabs = document.querySelectorAll('#tabs button');
-  const screens = document.querySelectorAll('.screen');
-  tabs.forEach(t=>t.addEventListener('click',()=>activate(t.dataset.tab)));
-  function activate(id){
-    tabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
-    screens.forEach(s=>s.classList.toggle('active', s.id===id));
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-  function goSend(){ activate('send'); }
+const ROLES = {
+  initiator:{n:'Firoze ',r:'Initiator / Case Worker',av:'AS'},
+  dealing:{n:'Rakesh Verma',r:'Dealing Assistant',av:'RV'},
+  reporting:{n:'Sunil Mehta',r:'Reporting Officer',av:'SM'},
+  reviewing:{n:'Dr. Kavita Nair',r:'Reviewing Officer',av:'KN'},
+  academic:{n:'Prakash Joshi',r:'Academic Section Officer',av:'PJ'},
+  establishment:{n:'Meena Iyer',r:'Establishment Section Officer',av:'MI'},
+  research:{n:'Dr. Arjun Reddy',r:'Research & External Affairs Officer',av:'AR'},
+  finance:{n:'Sanjay Gupta',r:'Finance Officer',av:'SG'},
+  admin:{n:'System Admin',r:'System Administrator',av:'SA'}
+};
+const ROLE_ORDER = Object.keys(ROLES);
+let currentRole = 'initiator';
+let chartsDone = false;
 
-  // ---- searchable dropdown ----
-  function openDD(){ document.getElementById('dd-official').classList.add('open'); }
-  function pickOfficial(name, desig, av){
-    document.getElementById('f-official').value = name + ' — ' + desig;
-    document.getElementById('dd-official').classList.remove('open');
-    updateRoute();
-  }
-  document.addEventListener('click', e=>{
-    if(!e.target.closest('.search-wrap')) document.getElementById('dd-official')?.classList.remove('open');
-  });
+function doLogin(){
+  currentRole = document.getElementById('login-role').value;
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').classList.add('show');
+  applyRole();
+  nav('dashboard');
+}
+function applyRole(){
+  const r = ROLES[currentRole];
+  document.getElementById('userName').textContent = r.n;
+  document.getElementById('userRole').textContent = r.r;
+  document.getElementById('userAv').textContent = r.av;
+  document.getElementById('dashHi').textContent = 'Welcome, ' + r.n.split(' ')[0];
+  // admin-only nav
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display = currentRole==='admin' ? 'flex':'none');
+  // role-specific dashboard subtitle
+  const subs = {
+    initiator:"Track your files and respond to clarifications.",
+    finance:"Files awaiting final approval and fund release.",
+    admin:"System-wide overview, workflow and access control.",
+  };
+  document.getElementById('dashSub').textContent = subs[currentRole] || "Files awaiting your action are highlighted below.";
+}
+function cycleRole(){
+  const i = ROLE_ORDER.indexOf(currentRole);
+  currentRole = ROLE_ORDER[(i+1)%ROLE_ORDER.length];
+  applyRole();
+  showToast('Viewing as ' + ROLES[currentRole].r);
+}
 
-  // ---- live route preview ----
-  function updateRoute(){
-    const off = document.getElementById('f-official').value.split('—')[0].trim() || 'Recipient';
-    const dept = document.getElementById('f-dept').value || 'Department';
-    const sec = document.getElementById('f-section').value || 'Section';
-    document.getElementById('route-to').textContent = off;
-    document.getElementById('route-dept').textContent = dept + ' · ' + sec;
-  }
+const CRUMBS={dashboard:'Dashboard',initiate:'Initiate File',detail:'File Details',inprogress:'Files In Progress',completed:'Completed Files',escalation:'Escalations',reports:'Reports & Analytics',config:'Workflow Config'};
+function nav(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+view).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.toggle('active', i.dataset.view===view));
+  document.getElementById('crumb').textContent = CRUMBS[view]||'';
+  toggleSidebar(false);
+  document.querySelector('.main').scrollTo({top:0});
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(!chartsDone){ chartsDone=true; setTimeout(buildCharts,60); }
+}
+function toggleSidebar(open){
+  document.getElementById('sidebar').classList.toggle('open',open);
+  document.getElementById('sbBack').classList.toggle('show',open);
+}
+function compTab(btn){document.querySelectorAll('#compTabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+let toastT;
+function showToast(m){const t=document.getElementById('toast');document.getElementById('toast-msg').innerHTML=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
 
-  // ---- send file ----
-  function sendFile(){
-    showToast('File IITH/ACAD/2026/0511 sent to recipient\u2019s inbox');
-  }
+function buildCharts(){
+  if(typeof Chart==='undefined') return;
+  Chart.defaults.font.family="Inter, sans-serif";
+  Chart.defaults.font.size=11;
+  Chart.defaults.color="#566076";
+  const NAVY="#13405C", GOLD="#B8893B", GREEN="#15803D", AMBER="#B45309", RED="#C0392B", TEAL="#13796F";
+  const months=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
+  const grid={grid:{color:'#EDF0F4'}};
 
-  // ---- confirm physical receipt ----
-  function confirmReceipt(containerId, btn){
-    const c = document.getElementById(containerId);
-    c.innerHTML = '<span class="st st-received">Received \u00b7 synced</span>' +
-                  '<span style="font-size:11.5px;color:var(--ink-faint)">Just now</span>';
-    showToast('Physical receipt confirmed \u2014 digital record synced');
-  }
+  const mk=(id,cfg)=>{const el=document.getElementById(id);if(el)new Chart(el,cfg);};
 
-  // ---- history view toggle ----
-  function setHistView(view, btn){
-    document.querySelectorAll('#hist-seg button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('hist-timeline').style.display = view==='timeline' ? 'block':'none';
-    document.getElementById('hist-table').style.display = view==='table' ? 'block':'none';
-  }
+  mk('chMovement',{type:'line',data:{labels:months,datasets:[
+    {label:'Created',data:[12,15,11,18,14,9,16,13,17,15,12,18],borderColor:NAVY,backgroundColor:'rgba(19,64,92,.08)',fill:true,tension:.35,borderWidth:2,pointRadius:0},
+    {label:'Closed',data:[9,12,13,14,12,11,12,14,13,16,11,14],borderColor:GREEN,backgroundColor:'transparent',tension:.35,borderWidth:2,pointRadius:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:14}}},scales:{x:{grid:{display:false}},y:{...grid,beginAtZero:true}}}});
 
-  // ---- toast ----
-  let toastT;
-  function showToast(msg){
-    const t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastT);
-    toastT = setTimeout(()=>t.classList.remove('show'), 2800);
-  }
+  mk('chDept',{type:'bar',data:{labels:['CSE','Mech','Civil','Phy.Sci','Mgmt'],datasets:[
+    {label:'Approved',data:[22,16,12,18,9],backgroundColor:GREEN,stack:'s'},
+    {label:'Pending',data:[6,4,5,3,2],backgroundColor:AMBER,stack:'s'},
+    {label:'Returned',data:[2,1,3,1,1],backgroundColor:'#7C3AED',stack:'s'}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:9,padding:10}}},scales:{x:{grid:{display:false}},y:{...grid,beginAtZero:true}}}});
+
+  mk('chAppr',{type:'bar',data:{labels:['Dealing','Reporting','Reviewing','Academic','Estab.','Finance'],datasets:[
+    {label:'Avg days',data:[0.8,1.2,2.1,1.5,1.8,1.1],backgroundColor:NAVY,borderRadius:5,barThickness:16}
+  ]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{...grid,beginAtZero:true},y:{grid:{display:false}}}}});
+
+  mk('chStatus',{type:'doughnut',data:{labels:['Approved','In Progress','Returned','Rejected','Cancelled'],datasets:[
+    {data:[81,23,11,6,7],backgroundColor:[GREEN,AMBER,'#7C3AED',RED,'#6B7280'],borderWidth:2,borderColor:'#fff'}
+  ]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{boxWidth:10,padding:10}}}}});
+
+  mk('chPendency',{type:'bar',data:{labels:['K.Nair','M.Iyer','A.Reddy','S.Mehta','S.Gupta'],datasets:[
+    {label:'Pending files',data:[5,7,4,3,2],backgroundColor:[AMBER,RED,AMBER,NAVY,NAVY],borderRadius:5,barThickness:18}
+  ]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{...grid,beginAtZero:true},y:{grid:{display:false}}}}});
+
+  mk('chReport',{type:'bar',data:{labels:months,datasets:[
+    {label:'Created',data:[12,15,11,18,14,9,16,13,17,15,12,18],backgroundColor:NAVY,borderRadius:3},
+    {label:'Disposed',data:[9,12,13,14,12,11,12,14,13,16,11,14],backgroundColor:GOLD,borderRadius:3}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},scales:{x:{grid:{display:false}},y:{...grid,beginAtZero:true}}}});
+
+  mk('chTurnaround',{type:'line',data:{labels:months,datasets:[
+    {label:'Avg turnaround (days)',data:[6.2,5.8,6.5,5.1,4.8,5.5,4.2,4.6,3.9,4.1,3.7,3.4],borderColor:TEAL,backgroundColor:'rgba(19,121,111,.1)',fill:true,tension:.35,borderWidth:2,pointRadius:2}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{...grid,beginAtZero:true}}}});
+}
 </script>
 </body>
 </html>
